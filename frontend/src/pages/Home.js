@@ -1,219 +1,174 @@
-import React, { useEffect, useState, useCallback, useMemo } from "react";
-import { useDispatch, useSelector } from "react-redux";
-import { fetchProducts } from "../slices/productSlice";
-import { addToCart } from "../slices/cartSlice";
-import {
-  Box,
-  Grid,
-  Typography,
-  Card,
-  CardMedia,
-  CardContent,
-  Button,
-  CircularProgress,
-  Modal,
-} from "@mui/material";
-import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
-import { useNavigate } from "react-router-dom";
-import ReplyIcon from '@mui/icons-material/Reply';
-import ShoppingCartIcon from "@mui/icons-material/ShoppingCart";
+// import React, { useState } from "react";
+// import {
+//   Box,
+//   Typography,
+//   Grid,
+//   useMediaQuery,
+//   Card,
+//   CardMedia,
+//   Modal,
+//   IconButton,
+// } from "@mui/material";
+// import PlayCircleIcon from "@mui/icons-material/PlayCircle";
+// import img from "../../asscerts/icon5.png";
+// import image from "../../asscerts/images/img8.jpg";
 
-// Modal styles
-const modalStyles = {
-  position: "absolute",
-  top: "50%",
-  left: "50%",
-  transform: "translate(-50%, -50%)",
-  bgcolor: "background.paper",
-  boxShadow: 24,
-  p: 4,
-  borderRadius: 2,
-  width: "80%",
-  maxWidth: "500px",
-};
+// const Gotravel = () => {
+//   const [open, setOpen] = useState(false);
+//   const isMobile = useMediaQuery("(max-width:600px)");
 
-const ProductCard = ({ product, onHover }) => {
-  const imageSrc = useMemo(
-    () =>
-      product.image
-        ? `http://localhost:9000/uploads/${product.image}`
-        : "/default-image.jpg",
-    [product.image]
-  );
+//   return (
+//     <Box my={5} sx={{ backgroundColor: "#008cba", p: 4, color: "#fff" }}>
+//       <Grid container spacing={3} alignItems="center">
+//         {/* Left Side - Video Section */}
+//         <Grid
+//           item
+//           xs={12}
+//           md={4}
+//           sx={{ display: "flex", justifyContent: "center" }}
+//         >
+//           <Box
+//             sx={{
+//               position: "relative",
+//               width: "100%",
+//               maxWidth: "450px",
+//               borderRadius: 2,
+//               overflow: "hidden",
+//               cursor: "pointer",
+//             }}
+//             onClick={() => setOpen(true)}
+//           >
+//             <Card>
+//               <CardMedia component="img" image={image} alt="Gallery Image" />
+//             </Card>
+//             <IconButton
+//               sx={{
+//                 position: "absolute",
+//                 top: "50%",
+//                 left: "50%",
+//                 transform: "translate(-50%, -50%)",
+//                 color: "white",
+//                 backgroundColor: "rgba(0,0,0,0.5)",
+//                 "&:hover": { backgroundColor: "rgba(0,0,0,0.7)" },
+//                 fontSize: "3rem",
+//               }}
+//             >
+//               <PlayCircleIcon fontSize="large" />
+//             </IconButton>
+//           </Box>
+//         </Grid>
 
-  return (
-    <Card
-      sx={{
-        width: "100%",
-        maxWidth: 345,
-        minHeight: 50,
-        boxShadow: 3,
-        borderRadius: 2,
-        position: "relative",
-        transition: "transform 0.3s ease",
-        "&:hover": {
-          transform: "scale(1.05)",
-          boxShadow: 8,
-        },
-      }}
-      onClick={() => onHover(product)}
-    >
-      <CardMedia
-        component="img"
-        image={imageSrc}
-        alt={product.title}
-        sx={{
-          width: "100%",
-          height: "200px",
-          objectFit: "contain",
-          borderTopLeftRadius: 2,
-          borderTopRightRadius: 2,
-        }}
-      />
-      <CardContent>
-        <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-          {product.title}
-        </Typography>
-        <Box sx={{ display: "flex", alignItems: "center", mt: 2 }}>
-          <CurrencyRupeeIcon color="primary" sx={{ mr: 0.5 }} />
-          <Typography variant="h6" sx={{ fontWeight: "bold" }}>
-            {product.price}
-          </Typography>
-        </Box>
-      </CardContent>
-    </Card>
-  );
-};
+//         {/* Right Side - Text and Information */}
+//         <Grid item xs={12} md={8}>
+//           <Typography
+//             sx={{
+//               display: "flex",
+//               alignItems: "center",
+//               gap: 1,
+//               fontSize: "0.8rem",
+//             }}
+//           >
+//             <Box
+//               sx={{ backgroundColor: "white", height: "1px", width: "1cm" }}
+//             />
+//             CALLBACK FOR MORE
+//           </Typography>
 
-const Home = () => {
-  const dispatch = useDispatch();
-  const navigate = useNavigate();
-  const {
-    items: products,
-    status,
-    error,
-  } = useSelector((state) => state.products);
-  const [hoveredProduct, setHoveredProduct] = useState(null);
+//           <Typography variant="h5" fontWeight="bold">
+//             GO TRAVEL. DISCOVER. REMEMBER US!!
+//           </Typography>
+//           <Typography variant="body1" sx={{ mt: 2, fontSize: "0.7rem" }}>
+//             <strong>
+//               Iconic Travel offers the best, most affordable tour packages to
+//               our reliable clients, providing experiences that help people break
+//               away from daily routines.
+//             </strong>
+//           </Typography>
 
-  useEffect(() => {
-    if (status === "idle") {
-      dispatch(fetchProducts());
-    }
-  }, [status, dispatch]);
+//           {/* Stats Section */}
+//           <Grid container spacing={2} sx={{ mt: 2 }}>
+//             {[
+//               "10+ Years in Industry",
+//               "250K+ Satisfied Customers",
+//               "10+ Qualified Staff",
+//               "250+ Worldwide Locations",
+//             ].map((text, index) => (
+//               <Grid item xs={6} sm={6} md={6} key={index}>
+//                 <Typography variant="h6" fontWeight="bold">
+//                   {text.split(" ")[0]}
+//                 </Typography>
+//                 <Typography variant="body2" fontSize="0.7rem">
+//                   {text.split(" ").slice(1).join(" ")}
+//                 </Typography>
+//               </Grid>
+//             ))}
+//           </Grid>
 
-  const handleAddToCart = useCallback(
-    (product) => {
-      dispatch(
-        addToCart({
-          id: product._id,
-          title: product.title,
-          image: product.image,
-          description: product.description,
-          price: product.price,
-        })
-      );
-    },
-    [dispatch]
-  );
+//           {/* Contact Section */}
+//           <Grid
+//             container
+//             sx={{
+//               position: "absolute",
+//               backgroundColor: "#fff",
+//               color: "#008cba",
+//               p: 2,
+//               borderRadius: 1,
+//               mt: 0.5,
+//               textAlign: "center",
+//               alignItems: "center",
+//               display: "inline-flex",
+//               width: "auto",
+//               boxShadow: 3,
+//             }}
+//           >
+//             <Grid item xs="auto">
+//               <img
+//                 src={img}
+//                 alt="Company Logo"
+//                 style={{ width: isMobile ? "20px" : "25px", height: "auto" }}
+//               />
+//             </Grid>
+//             <Grid item xs>
+//               <Typography variant="body1" fontWeight="bold">
+//                 Have any doubt? Call Us
+//               </Typography>
+//               <Typography variant="h6" color="red" fontWeight="bold">
+//                 +91-8130883907
+//               </Typography>
+//             </Grid>
+//           </Grid>
+//         </Grid>
+//       </Grid>
 
-  const handleModalClose = () => setHoveredProduct(null);
+//       {/* Video Modal */}
+//       <Modal open={open} onClose={() => setOpen(false)}>
+//         <Box
+//           sx={{
+//             position: "absolute",
+//             top: "50%",
+//             left: "50%",
+//             transform: "translate(-50%, -50%)",
+//             width: "90%",
+//             maxWidth: 600,
+//             bgcolor: "background.paper",
+//             boxShadow: 24,
+//             p: 2,
+//             borderRadius: 2,
+//           }}
+//         >
+//           <iframe
+//             width="100%"
+//             height="315"
+//             src="https://www.youtube.com/embed/IUN664s7N-c"
+//             title="Travel Video"
+//             frameBorder="0"
+//             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+//             allowFullScreen
+//           ></iframe>
+//         </Box>
+//       </Modal>
+//     </Box>
+//   );
+// };
 
-  if (status === "loading") {
-    return (
-      <Box sx={{ display: "flex", justifyContent: "center", mt: 5 }}>
-        <CircularProgress />
-      </Box>
-    );
-  }
-
-  if (status === "failed") {
-    return (
-      <Typography variant="h6" color="error" sx={{ textAlign: "center" }}>
-        Error: {error}
-      </Typography>
-    );
-  }
-
-  return (
-    <Box>
-      <Box sx={{ p: 3 }}>
-        <Typography variant="h4" sx={{ mb: 4, textAlign: "center" }}>
-          Welcome to Our Store
-        </Typography>
-        <Grid container spacing={3}>
-          {products.map((product) => (
-            <Grid item xs={12} sm={6} md={3} lg={4} key={product._id}>
-              <ProductCard product={product} onHover={setHoveredProduct} />
-            </Grid>
-          ))}
-        </Grid>
-      </Box>
-
-      {/* Modal for hovered product */}
-      <Modal
-        open={!!hoveredProduct}
-        onClose={handleModalClose}
-        aria-labelledby="product-modal-title"
-        aria-describedby="product-modal-description"
-      >
-        <Box sx={modalStyles}>
-          {hoveredProduct && (
-            <>
-              <Typography id="product-modal-title" variant="h6">
-                {hoveredProduct.title}
-              </Typography>
-              <CardMedia
-                component="img"
-                image={`http://localhost:9000/uploads/${hoveredProduct.image}`}
-                alt={hoveredProduct.title}
-                sx={{
-                  width: "100%",
-                  height: "200px",
-                  objectFit: "contain",
-                  mb: 2,
-                }}
-              />
-              <Typography
-                id="product-modal-description"
-                variant="body1"
-                sx={{ fontSize: "12px" }}
-              >
-                {hoveredProduct.description}
-              </Typography>
-              <Box
-                sx={{ mt: 2, display: "flex", justifyContent: "space-between" }}
-              >
-                <Button variant="contained" onClick={handleModalClose}>
-                <ReplyIcon/>
-                </Button>
-                <Button
-                  variant="contained"
-                  sx={{
-                    backgroundColor: '#FFA41C', 
-                    color: '#111',             
-                    fontWeight: 'bold',
-                    '&:hover': {
-                      backgroundColor: '#F08804', 
-                    },
-                  }}
-                  onClick={() => handleAddToCart(hoveredProduct)}
-                >
-                  Add to Cart
-                </Button>
-                <Button
-                  variant="contained"
-                  sx={{ backgroundColor: "secondary.main", color: "white" }}
-                  onClick={() => navigate("/cart")}
-                >
-                <ShoppingCartIcon/>
-                </Button>
-              </Box>
-            </>
-          )}
-        </Box>
-      </Modal>
-    </Box>
-  );
-};
-
-export default Home;
+// export default Gotravel;
