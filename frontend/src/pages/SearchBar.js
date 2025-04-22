@@ -72,13 +72,13 @@
 //         <Paper
 //           sx={{
 //             position: "absolute",
-//             top: "calc(100% + 8px)", // Position below the search bar
+//             top: "calc(100% + 4px)", // Position below the search bar
 //             left: 0,
 //             right: 0,
 //             borderRadius: 2,
 //             boxShadow: 3,
 //             zIndex: 10,
-//             maxHeight: 200,
+//             maxHeight: 45,
 //             overflowY: "auto",
 //           }}
 //         >
@@ -101,25 +101,62 @@
 
 // export default SearchBar;
 
-
-import React, { useState } from "react"; 
-import { useDispatch } from "react-redux";
-import { setSearchTerm } from "../slices/productSlice";  // Import Redux action
-import { Box, IconButton, Paper, InputBase } from "@mui/material";
+import React, { useState, useEffect } from "react";
+import axios from "axios";
+import {
+  Box,
+  IconButton,
+  Paper,
+  List,
+  ListItem,
+  ListItemText,
+  InputBase,
+} from "@mui/material";
 import SearchIcon from "@mui/icons-material/Search";
+import { useNavigate } from "react-router-dom";
+import debounce from "lodash.debounce"; // npm install lodash.debounce
 
 const SearchBar = () => {
-  const dispatch = useDispatch();
-  const [searchTerm, setLocalSearchTerm] = useState("");
+  const [products, setProducts] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
+  const navigate = useNavigate();
 
-  const handleSearchChange = (e) => {
-    const term = e.target.value;
-    setLocalSearchTerm(term);
-    dispatch(setSearchTerm(term));  // Dispatch search term to Redux
+  // Fetch products (debounced)
+  const fetchProducts = debounce(async (term) => {
+    if (!term.trim()) return;
+    try {
+      const { data } = await axios.get(
+        `http://localhost:9000/api/products?search=${term}`
+      );
+      setProducts(data.slice(0, 5)); // Limit to top 5 results
+      setShowDropdown(true);
+    } catch (error) {
+      console.error("Error fetching products:", error);
+    }
+  }, 300); // Debounce delay
+
+  // Handle search term updates
+  useEffect(() => {
+    if (searchTerm.trim()) {
+      fetchProducts(searchTerm);
+    } else {
+      setProducts([]);
+      setShowDropdown(false);
+    }
+    // Cleanup debounce on unmount
+    return () => fetchProducts.cancel();
+  }, [searchTerm]);
+
+  const handleProductClick = (productId) => {
+    navigate(`/product/${productId}`);
+    setShowDropdown(false);
+    setSearchTerm("");
   };
 
   return (
-    <Box sx={{ position: "relative", width: "100%", minWidth: 100 }}>
+    <Box sx={{ position: "relative", width: "100%", maxWidth: 400 }}>
+      {/* Search Bar */}
       <Paper
         component="form"
         sx={{
@@ -127,10 +164,11 @@ const SearchBar = () => {
           alignItems: "center",
           borderRadius: 2,
           boxShadow: 1,
-          backgroundColor: "black",
+          backgroundColor: "#121212",
           color: "white",
           padding: "4px 8px",
         }}
+        onSubmit={(e) => e.preventDefault()}
       >
         <IconButton sx={{ p: 1, color: "white" }}>
           <SearchIcon />
@@ -138,10 +176,49 @@ const SearchBar = () => {
         <InputBase
           placeholder="Search products…"
           value={searchTerm}
-          onChange={handleSearchChange}
-          sx={{ flex: 1, color: "white", padding: "0px" }}
+          onChange={(e) => setSearchTerm(e.target.value)}
+          onFocus={() => searchTerm && setShowDropdown(true)}
+          sx={{ flex: 1, color: "white" }}
         />
       </Paper>
+
+      {/* Dropdown */}
+      {showDropdown && products.length > 0 && (
+        <Paper
+          sx={{
+            position: "absolute",
+            top: "calc(100% + 4px)",
+            left: 0,
+            right: 0,
+            borderRadius: 2,
+            boxShadow: 3,
+            zIndex: 10,
+            maxHeight: 250,
+            overflowY: "auto",
+            backgroundColor: "#fff",
+          }}
+        >
+          <List dense>
+            {products.map((product) => (
+              <ListItem
+                key={product._id}
+                button
+                onClick={() => handleProductClick(product._id)}
+              >
+                <ListItemText
+                  primary={product.title}
+                  secondary={product.image}
+
+                  primaryTypographyProps={{
+                    noWrap: true,
+                    sx: { fontSize: 14 },
+                  }}
+                />
+              </ListItem>
+            ))}
+          </List>
+        </Paper>
+      )}
     </Box>
   );
 };

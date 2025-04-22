@@ -51,7 +51,7 @@ function Navbar({ window }) {
   const getNavItems = () =>
     [
       !isLoggedIn && { label: <LoginIcon />, path: "/login" },
-      isLoggedIn && { label: <HomeIcon />, path: "/home" },
+      isLoggedIn &&  { label: <HomeIcon />, path: "/home" },
       { label: <AccountCircleIcon />, path: "/userlist" },
       {
         label: (

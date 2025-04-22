@@ -10,19 +10,18 @@ import {
 import CurrencyRupeeIcon from "@mui/icons-material/CurrencyRupee";
 import { useNavigate } from "react-router-dom";
 import { useSelector } from "react-redux";
-import token from "../pages/ProtectedRoute"
 
 const ProductCard = ({ product, onAddToCart }) => {
   const [isHovered, setIsHovered] = useState(false);
   const navigate = useNavigate();
-
-  
+  const auth = useSelector((state) => state.auth); // Assuming you store auth data in Redux
 
   const handleBuyNowClick = () => {
-    if (token) {
-      navigate("/home");
+    if (auth?.token) {
+      // Go to checkout or product detail
+      navigate(`/product/${product._id}`);
     } else {
-      navigate("/");
+      navigate("/login");
     }
   };
 
@@ -34,7 +33,7 @@ const ProductCard = ({ product, onAddToCart }) => {
         borderRadius: 2,
         transition: "transform 0.3s ease",
         "&:hover": { transform: "scale(1.05)", boxShadow: 8 },
-        position: "relative", // Ensure button placement works
+        position: "relative",
       }}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
@@ -74,28 +73,32 @@ const ProductCard = ({ product, onAddToCart }) => {
       <Box
         sx={{
           display: "flex",
-          justifyContent: "space-between",
+          flexDirection: "column",
+          gap: 1,
           p: 2,
-          position: "relative",
         }}
-      ></Box>
+      >
+        {isHovered && (
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: "#1976d2",
+              "&:hover": { backgroundColor: "#115293" },
+            }}
+            onClick={handleBuyNowClick}
+          >
+            Buy Now
+          </Button>
+        )}
 
-      {/* Buy Now Button (Visible on Hover) */}
-      {isHovered && (
         <Button
-          variant="contained"
-          sx={{
-            backgroundColor: "#1976d2",
-            "&:hover": { backgroundColor: "#115293" },
-            position: "absolute",
-            bottom: "16px",
-            right: "16px",
-          }}
-          onClick={handleBuyNowClick} // Use the new handler
+          variant="outlined"
+          color="primary"
+          onClick={() => onAddToCart(product)}
         >
-          Buy Now
+          Add to Cart
         </Button>
-      )}
+      </Box>
     </Card>
   );
 };
